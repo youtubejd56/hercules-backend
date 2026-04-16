@@ -31,8 +31,9 @@ SECRET_KEY = 'django-insecure-^=v(0a9o5#^mj!e(0jcv&4911nw%ls*1qluu)t)n6#(h(*d3cg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['hercules-mb5m.onrender.com', '127.0.0.1', 'localhost', '*']
+ALLOWED_HOSTS = ['hercules-mb5m.onrender.com', 'hercules-backend.onrender.com', '127.0.0.1', 'localhost', '*']
 
+CSRF_TRUSTED_ORIGINS = ['https://hercules-mb5m.onrender.com', 'https://hercules-backend.onrender.com']
 
 # Application definition
 
@@ -55,10 +56,10 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
