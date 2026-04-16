@@ -31,9 +31,20 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-^=v(0a9o5#^mj!e(0jcv&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['hercules-mb5m.onrender.com', 'hercules-backend.onrender.com', '127.0.0.1', 'localhost', '*']
+ALLOWED_HOSTS = [
+    'hercules-mb5m.onrender.com',
+    'hercules-backend.onrender.com',
+    'hercules-backend-a8bu.onrender.com',
+    '127.0.0.1',
+    'localhost',
+    '*'
+]
 
-CSRF_TRUSTED_ORIGINS = ['https://hercules-mb5m.onrender.com', 'https://hercules-backend.onrender.com']
+CSRF_TRUSTED_ORIGINS = [
+    'https://hercules-mb5m.onrender.com',
+    'https://hercules-backend.onrender.com',
+    'https://hercules-backend-a8bu.onrender.com',
+]
 
 # Application definition
 
@@ -147,6 +158,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     'https://hercules-mb5m.onrender.com',
     'https://hercules-backend.onrender.com',
+    'https://hercules-backend-a8bu.onrender.com',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
 ]
@@ -160,7 +172,9 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        # CompressedStaticFilesStorage (not Manifest) avoids crashing when
+        # staticfiles/ dir is missing. Safe fallback if collectstatic didn't run.
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
