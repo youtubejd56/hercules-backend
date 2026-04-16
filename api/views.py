@@ -31,7 +31,9 @@ class AdmissionListCreate(generics.ListCreateAPIView):
         try:
             return super().post(request, *args, **kwargs)
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            import traceback
+            error_trace = traceback.format_exc()
+            return Response({"error": str(e), "traceback": error_trace}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class AdmissionDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Admission.objects.all()
