@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from urllib.parse import urlparse
 import dj_database_url
 from dotenv import load_dotenv
 
@@ -167,10 +168,37 @@ CORS_ALLOW_CREDENTIALS = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+
+def _parse_cloudinary_url(url):
+    if not url:
+        return {}
+    parsed = urlparse(url)
+    if parsed.scheme != 'cloudinary':
+        return {}
+    return {
+        'CLOUD_NAME': parsed.hostname or '',
+        'API_KEY': parsed.username or '',
+        'API_SECRET': parsed.password or '',
+    }
+
+
+_cloudinary_from_url = _parse_cloudinary_url(os.environ.get('CLOUDINARY_URL'))
+CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME') or _cloudinary_from_url.get('CLOUD_NAME', '')
+CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY') or _cloudinary_from_url.get('API_KEY', '')
+CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET') or _cloudinary_from_url.get('API_SECRET', '')
+
+USE_CLOUDINARY_STORAGE = all([
+    CLOUDINARY_CLOUD_NAME,
+    CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET,
+])
+
 STORAGES = {
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
+    "default": (
+        {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"}
+        if USE_CLOUDINARY_STORAGE
+        else {"BACKEND": "django.core.files.storage.FileSystemStorage"}
+    ),
     "staticfiles": {
         # CompressedStaticFilesStorage (not Manifest) avoids crashing when
         # staticfiles/ dir is missing. Safe fallback if collectstatic didn't run.
@@ -185,7 +213,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Cloudinary Storage Configuration
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'djhdv0j9a'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '248636339478371'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'weMLDdcVluorroggtR2c_FzCIHI'),
+    'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
+    'API_KEY': CLOUDINARY_API_KEY,
+    'API_SECRET': CLOUDINARY_API_SECRET,
 }
