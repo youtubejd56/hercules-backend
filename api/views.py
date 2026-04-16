@@ -11,7 +11,10 @@ class ImagePostListCreate(generics.ListCreateAPIView):
         try:
             return super().list(request, *args, **kwargs)
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            error_msg = str(e)
+            if 'api_key' in error_msg:
+                error_msg = "Image upload service is currently unavailable."
+            return Response({"error": error_msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ImagePostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = ImagePost.objects.all()
@@ -31,9 +34,10 @@ class AdmissionListCreate(generics.ListCreateAPIView):
         try:
             return super().post(request, *args, **kwargs)
         except Exception as e:
-            import traceback
-            error_trace = traceback.format_exc()
-            return Response({"error": str(e), "traceback": error_trace}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            error_msg = str(e)
+            if 'api_key' in error_msg:
+                error_msg = "Image upload service is currently unavailable."
+            return Response({"error": error_msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class AdmissionDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Admission.objects.all()
