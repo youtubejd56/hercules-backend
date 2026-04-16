@@ -89,6 +89,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database configuration using Neon DB
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+# NOTE: Use the direct (non-pooler) URL for migrations, pooler URL for app runtime.
+# Set DIRECT_DATABASE_URL in Render env vars to the non-pooler Neon URL.
 
 DATABASES = {
     'default': dj_database_url.config(
