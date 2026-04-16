@@ -37,6 +37,10 @@ class AdmissionDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Admission.objects.all()
     serializer_class = AdmissionSerializer
 
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
 class TestimonialListCreate(generics.ListCreateAPIView):
     queryset = Testimonial.objects.all().order_by('-created_at')
     serializer_class = TestimonialSerializer

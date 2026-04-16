@@ -26,10 +26,10 @@ load_dotenv(BASE_DIR / '.env')
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-^=v(0a9o5#^mj!e(0jcv&4911nw%ls*1qluu)t)n6#(h(*d3cg'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-^=v(0a9o5#^mj!e(0jcv&4911nw%ls*1qluu)t)n6#(h(*d3cg')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['hercules-mb5m.onrender.com', 'hercules-backend.onrender.com', '127.0.0.1', 'localhost', '*']
 
@@ -133,13 +133,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # CORS Configuration
-CORS_ALLOW_ALL_ORIGINS = True # Change to False and define allowed domains in production
+# Allow all origins so the frontend on Render can reach the backend.
+# For extra security we also explicitly list known origins.
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    'https://hercules-mb5m.onrender.com',
+    'https://hercules-backend.onrender.com',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
+CORS_ALLOW_CREDENTIALS = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
