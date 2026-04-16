@@ -105,7 +105,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+        default=os.environ.get('DATABASE_URL', 'postgresql://neondb_owner:npg_71ThtUfLrPeF@ep-curly-darkness-a1smh5rr.ap-southeast-1.aws.neon.tech/neondb?sslmode=require'),
         conn_max_age=600,
         conn_health_checks=True,
     )
@@ -185,7 +185,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Cloudinary Storage Configuration
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'djhdv0j9a'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '248636339478371'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'weMLDdcVluorroggtR2c_FzCIHI'),
 }
