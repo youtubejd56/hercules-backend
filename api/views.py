@@ -1,10 +1,16 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.models import Token
 from datetime import date
 from django.db.models import Q
 from .models import ImagePost, Admission, Testimonial
-from .serializers import ImagePostSerializer, AdmissionSerializer, TestimonialSerializer
+from .serializers import (
+    ImagePostSerializer, AdmissionSerializer, TestimonialSerializer,
+    RegisterSerializer, LoginSerializer, UserSerializer, UserProfileSerializer,
+)
 
 def _format_exception_response(exc):
     # Keep validation errors as 400 so the frontend can show actionable feedback.
@@ -119,3 +125,61 @@ class TestimonialListCreate(generics.ListCreateAPIView):
 class TestimonialDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Testimonial.objects.all()
     serializer_class = TestimonialSerializer
+
+
+# ─── Auth Views ─────────────────────────────────────────────────────────────────
+
+class RegisterView(APIView):
+    """POST /api/auth/register/  →  creates user + profile, returns token."""
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response(
+                {"token": token.key, "user": UserSerializer(user).data},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(APIView):
+    """POST /api/auth/login/  →  returns token for valid credentials."""
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response(
+                {"token": token.key, "user": UserSerializer(user).data}
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LogoutView(APIView):
+    """POST /api/auth/logout/  →  deletes the user's token."""
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        request.user.auth_token.delete()
+        return Response({"detail": "Logged out."}, status=status.HTTP_204_NO_CONTENT)
+
+
+class MeView(APIView):
+    """GET/PATCH /api/auth/me/  →  retrieve or update current user profile."""
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(UserSerializer(request.user).data)
+
+    def patch(self, request):
+        profile = getattr(request.user, 'profile', None)
+        if not profile:
+            return Response({"detail": "Profile not found."}, status=404)
+        serializer = UserProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(UserSerializer(request.user).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

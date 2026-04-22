@@ -7,6 +7,10 @@ from .views import (
     OverdueAdmissionList,
     TestimonialListCreate,
     TestimonialDetail,
+    RegisterView,
+    LoginView,
+    LogoutView,
+    MeView,
 )
 
 urlpatterns = [
@@ -17,4 +21,9 @@ urlpatterns = [
     path('admissions/<int:pk>/', AdmissionDetail.as_view(), name='admission-detail'),
     path('testimonials/', TestimonialListCreate.as_view(), name='testimonials-api'),
     path('testimonials/<int:pk>/', TestimonialDetail.as_view(), name='testimonials-detail'),
+    # Auth
+    path('auth/register/', RegisterView.as_view(), name='auth-register'),
+    path('auth/login/', LoginView.as_view(), name='auth-login'),
+    path('auth/logout/', LogoutView.as_view(), name='auth-logout'),
+    path('auth/me/', MeView.as_view(), name='auth-me'),
 ]
