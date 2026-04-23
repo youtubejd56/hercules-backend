@@ -13,6 +13,11 @@ class AdmissionSerializer(serializers.ModelSerializer):
         model = Admission
         fields = '__all__'
 
+    def validate_phone(self, value):
+        if Admission.objects.filter(phone=value).exists():
+            raise serializers.ValidationError('This mobile number is already in our records.')
+        return value
+
 class TestimonialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Testimonial
@@ -41,6 +46,11 @@ class RegisterSerializer(serializers.Serializer):
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
             raise serializers.ValidationError('Username already taken.')
+        return value
+
+    def validate_phone(self, value):
+        if value and UserProfile.objects.filter(phone=value).exists():
+            raise serializers.ValidationError('Mobile number already registered.')
         return value
 
     def create(self, validated_data):

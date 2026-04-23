@@ -12,7 +12,7 @@ class ImagePost(models.Model):
 class Admission(models.Model):
     name = models.CharField(max_length=150)
     email = models.EmailField(null=True, blank=True)
-    phone = models.CharField(max_length=20)
+    phone = models.CharField(max_length=20, unique=True, null=True, blank=True)
     plan = models.CharField(max_length=50, default='Pro')
     status = models.CharField(max_length=20, default='Pending')
     profile_pic = models.ImageField(upload_to='members/', null=True, blank=True)
@@ -46,7 +46,7 @@ class UserProfile(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    phone = models.CharField(max_length=20, blank=True, default='')
+    phone = models.CharField(max_length=20, null=True, blank=True, unique=True)
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True, default='')
     goal = models.CharField(max_length=20, choices=GOAL_CHOICES, blank=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
