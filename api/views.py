@@ -21,6 +21,9 @@ def _format_exception_response(exc):
     lowered = error_msg.lower()
     if any(token in lowered for token in ["cloudinary", "api_key", "api key", "api_secret", "api secret"]):
         error_msg = "Cloudinary is not configured correctly on the server. Set CLOUDINARY_URL or CLOUDINARY_* env vars."
+    elif "could not translate host name" in lowered or "name or service not known" in lowered or "no such host" in lowered:
+        error_msg = "Database connection failed. Please ensure your device has an active internet connection to reach the cloud database."
+        
     return Response({"error": error_msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
