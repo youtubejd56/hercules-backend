@@ -14,7 +14,11 @@ class AdmissionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate_phone(self, value):
-        if Admission.objects.filter(phone=value).exists():
+        # Exclude the current instance from the check if this is an update
+        qs = Admission.objects.filter(phone=value)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
             raise serializers.ValidationError('This mobile number is already in our records.')
         return value
 
