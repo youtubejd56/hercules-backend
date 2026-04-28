@@ -59,6 +59,25 @@ class AdmissionListCreate(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         try:
+            # Check if a member with this phone already exists
+            phone = request.data.get('phone')
+            if phone:
+                existing_admission = Admission.objects.filter(phone=phone).first()
+                if existing_admission:
+                    # Update the existing record (Renewal or Resubmission)
+                    # Use a copy of data to avoid modifying the original request object
+                    update_data = request.data.copy()
+                    
+                    # If name is a placeholder (Renewal - phone), don't overwrite the real name in DB
+                    incoming_name = update_data.get('name', '')
+                    if incoming_name.startswith('Renewal -'):
+                        update_data.pop('name', None)
+
+                    serializer = self.get_serializer(existing_admission, data=update_data, partial=True)
+                    serializer.is_valid(raise_exception=True)
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_200_OK)
+            
             return super().create(request, *args, **kwargs)
         except Exception as e:
             return _format_exception_response(e)
