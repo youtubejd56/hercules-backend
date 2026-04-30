@@ -47,6 +47,18 @@ class ImagePostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = ImagePost.objects.all()
     serializer_class = ImagePostSerializer
 
+    def update(self, request, *args, **kwargs):
+        try:
+            return super().update(request, *args, **kwargs)
+        except Exception as e:
+            return _format_exception_response(e)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except Exception as e:
+            return _format_exception_response(e)
+
 class AdmissionListCreate(generics.ListCreateAPIView):
     queryset = Admission.objects.all().order_by('-date_joined')
     serializer_class = AdmissionSerializer
@@ -86,9 +98,21 @@ class AdmissionDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Admission.objects.all()
     serializer_class = AdmissionSerializer
 
+    def update(self, request, *args, **kwargs):
+        try:
+            return super().update(request, *args, **kwargs)
+        except Exception as e:
+            return _format_exception_response(e)
+
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except Exception as e:
+            return _format_exception_response(e)
 
 class OverdueAdmissionList(generics.ListAPIView):
     serializer_class = AdmissionSerializer
@@ -147,6 +171,18 @@ class TestimonialListCreate(generics.ListCreateAPIView):
 class TestimonialDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Testimonial.objects.all()
     serializer_class = TestimonialSerializer
+
+    def update(self, request, *args, **kwargs):
+        try:
+            return super().update(request, *args, **kwargs)
+        except Exception as e:
+            return _format_exception_response(e)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except Exception as e:
+            return _format_exception_response(e)
 
 
 # ─── Auth Views ─────────────────────────────────────────────────────────────────
